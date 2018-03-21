@@ -33,7 +33,7 @@ for i in range(10):
 	for image in os.listdir(path + "/" + folder_names[i]):
 		train_image = path + "/" + folder_names[i] + "/" + image
 		test_img[j] = np.asarray(Image.open(train_image).convert('L').resize((45,45), Image.ANTIALIAS)).flatten()
-		test_img[j] = img[j] / 255.0
+		test_img[j] = test_img[j] / 255.0
 		test_labels[j] = folder_names[i]
 		j += 1
 
@@ -71,7 +71,6 @@ for i in range(40):
 		correct=correct+1
 	else:
 		wrong=wrong+1
-	time.sleep(5)
 		
 print("Wrong Predictions:",wrong)
 print("Correct Predictions:",correct)
