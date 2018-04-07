@@ -1,12 +1,12 @@
 #python3
-#obtained 92.5% accuracies
+#obtained an accuracy of 83%
 import sys
 import os
 import numpy as np
 from PIL import Image
 from operator import itemgetter
 import time
-from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 
 path = "train"
 folder_names = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))]
@@ -37,8 +37,7 @@ for i in range(10):
 		test_labels[j] = folder_names[i]
 		j += 1
 		
-		
-model=LogisticRegression(penalty='l2',solver='sag',max_iter=500,multi_class='ovr')
+model=DecisionTreeClassifier(criterion='gini',splitter='random')
 pred=model.fit(img,labels)
 score=pred.score(test_img,test_labels)
 print(score)

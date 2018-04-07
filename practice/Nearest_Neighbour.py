@@ -1,12 +1,14 @@
 #python3
-#obtained 92.5% accuracies
+#obtained an accuracy of 81.5%
 import sys
 import os
+import sklearn
 import numpy as np
 from PIL import Image
 from operator import itemgetter
 import time
-from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+
 
 path = "train"
 folder_names = [name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name))]
@@ -38,7 +40,7 @@ for i in range(10):
 		j += 1
 		
 		
-model=LogisticRegression(penalty='l2',solver='sag',max_iter=500,multi_class='ovr')
-pred=model.fit(img,labels)
-score=pred.score(test_img,test_labels)
-print(score)
+model=KNeighborsClassifier(n_neighbors=8,algorithm='ball_tree',weights='distance',p=1)
+prediction=model.fit(img,labels)
+result=prediction.score(test_img,test_labels)
+print(result)
