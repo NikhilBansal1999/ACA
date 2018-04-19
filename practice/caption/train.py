@@ -35,17 +35,15 @@ def data():
 			for i in range(len(im_desc)-1):
 				word_append=[token[im_desc[i]]]
 				word_out=[token[im_desc[i+1]]]
-				'''word_append=[0]*vocab_size
-				word_out=[0]*vocal_size
-				word_append[word_give_index]=1
-				word_out[word_out_index]=1'''
 				word_append=keras.utils.to_categorical(word_append, num_classes=4484)[0]
 				word_out=keras.utils.to_categorical(word_out, num_classes=4484)[0]
-				X_train.append(numpy.concatenate((im_data,word_append)))
-				Y_train.append(word_out)
+				if len(numpy.concatenate((im_data,word_append)))==29572:
+					X_train.append(numpy.concatenate((im_data,word_append)))
+					Y_train.append(word_out)
 			X_train=numpy.array(X_train)
 			Y_train=numpy.array(Y_train)
-			yield (X_train,Y_train)
+			if len(X_train)>0:
+				yield (X_train,Y_train)
 		
 model=Sequential()
 model.add(Dense(200,input_dim=29572,activation='relu'))
@@ -55,6 +53,7 @@ model.add(Dense(4484,activation='softmax'))
 sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(optimizer=sgd,loss='categorical_crossentropy',metrics=['accuracy'])
 
+model.load_weights('my_model_weights.h5')
 train_generator=data()
 model.fit_generator(generator=train_generator,steps_per_epoch=len(features_dict),epochs=1)
 model.save_weights('my_model_weights.h5')
