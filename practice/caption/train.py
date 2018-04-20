@@ -54,7 +54,7 @@ model.add(Dense(200,input_dim=29572,activation='relu'))
 model.add(Dense(200, activation='relu'))
 model.add(Dense(4484,activation='softmax'))
 
-sgd = optimizers.SGD(lr=0.0001, decay=1e-6, momentum=0.9, nesterov=True)
+sgd = keras.optimizers.Adagrad(lr=0.001, epsilon=None, decay=0.0)
 model.compile(optimizer=sgd,loss='categorical_crossentropy',metrics=['accuracy'])
 
 model.load_weights('my_model_weights.h5')
