@@ -63,7 +63,7 @@ model.fit_generator(generator=train_generator,steps_per_epoch=len(features_dict)
 model.save_weights('my_model_weights.h5')
 
 ep=open('epochs.txt','w')
-ep.write(epo+1)
+ep.write(str(epo+1))
 ep.close()
 			
 			
