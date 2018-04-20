@@ -45,12 +45,16 @@ def data():
 			if len(X_train)>0:
 				yield (X_train,Y_train)
 		
+ep=open('epochs.txt','r')
+epo=int(ep.read())
+ep.close()
+
 model=Sequential()
 model.add(Dense(200,input_dim=29572,activation='relu'))
 model.add(Dense(200, activation='relu'))
 model.add(Dense(4484,activation='softmax'))
 
-sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+sgd = optimizers.SGD(lr=0.0001, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(optimizer=sgd,loss='categorical_crossentropy',metrics=['accuracy'])
 
 model.load_weights('my_model_weights.h5')
@@ -58,7 +62,9 @@ train_generator=data()
 model.fit_generator(generator=train_generator,steps_per_epoch=len(features_dict),epochs=1)
 model.save_weights('my_model_weights.h5')
 
-
+ep=open('epochs.txt','w')
+ep.write(epo+1)
+ep.close()
 			
 			
 		
