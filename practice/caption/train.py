@@ -50,11 +50,11 @@ epo=int(ep.read())
 ep.close()
 
 model=Sequential()
-model.add(Dense(200,input_dim=29572,activation='relu'))
-model.add(Dense(200, activation='relu'))
+model.add(Dense(256,input_dim=29572,activation='relu'))
+#model.add(Dense(200, activation='relu'))
 model.add(Dense(4484,activation='softmax'))
 
-sgd = keras.optimizers.Adagrad(lr=0.001, epsilon=None, decay=0.0)
+sgd = keras.optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
 model.compile(optimizer=sgd,loss='categorical_crossentropy',metrics=['accuracy'])
 
 model.load_weights('my_model_weights.h5')
