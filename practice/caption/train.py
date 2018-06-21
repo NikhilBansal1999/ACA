@@ -25,7 +25,7 @@ def data():
 	global token
 	while 1:
 		for key in features_dict:
-			im_data=features_dict[key]
+			im_data=features_dict[key]/100
 			im_data=im_data.flatten()
 			im_desc=des_dict[key]
 			#input to neural net will consists of im_data concated with word and output will be the next word
