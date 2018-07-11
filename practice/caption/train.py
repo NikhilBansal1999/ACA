@@ -59,7 +59,7 @@ model.compile(optimizer=sgd,loss='categorical_crossentropy',metrics=['accuracy']
 
 model.load_weights('my_model_weights.h5')
 train_generator=data()
-model.fit_generator(generator=train_generator,steps_per_epoch=len(features_dict),epochs=5)
+model.fit_generator(generator=train_generator,steps_per_epoch=len(features_dict),epochs=1)
 model.save_weights('my_model_weights.h5')
 
 ep=open('epochs.txt','w')
