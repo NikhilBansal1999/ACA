@@ -9,26 +9,28 @@ feature_file=open('features.pkl','rb')
 features_dict=pickle.load(feature_file)
 feature_file.close()
 
-des_file=open('descriptions.pkl','rb')
+des_file=open('new_descriptions.pkl','rb')
 des_dict=pickle.load(des_file)
 des_file.close()
 
-token_file=open('tokens.pkl','rb')
+token_file=open('new_tokens.pkl','rb')
 token=pickle.load(token_file)
 token_file.close()
 
 print(type(features_dict))
 print(type(des_dict))
 print(type(token))
-i=0
+
 for key in features_dict:
-	print(type(features_dict[key]))
-	print(type(des_dict[key]))
-	print(des_dict[key])
 	print(features_dict[key].shape)
-	im_data=features_dict[key].flatten()
-	for j in im_data:
-		print(j)
-	i=i+1
-	if i>0:
-		break
+	break
+	
+for key in des_dict:
+	print(des_dict[key])
+	break
+	
+for key in token:
+	print(token["<end_desc>"])
+	break
+
+print(len(token.keys()))

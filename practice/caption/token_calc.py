@@ -1,6 +1,6 @@
 import pickle
 word=list()#list of all word in captions
-des_file=open("descriptions.txt",'r')
+des_file=open("new_descriptions.txt",'r')
 max_len=0
 for line in des_file:
 	des=line.split()[1:]
@@ -10,13 +10,14 @@ for line in des_file:
 			word.append(w)
 			
 word_dict=dict()
-i=0
+i=1
 for w in word:
 	word_dict[w]=i
 	i=i+1
 	
-out_file=open('tokens.pkl','wb')
+out_file=open('new_tokens.pkl','wb')
 pickle.dump(word_dict,out_file)
 out_file.close()
 des_file.close()
+print(i)
 	
