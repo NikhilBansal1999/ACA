@@ -30,7 +30,7 @@ for key in des_dict:
 	break
 	
 for key in token:
-	print(token["<end_desc>"])
+	print(token["<start_desc>"])
 	break
 
 print(len(token.keys()))
