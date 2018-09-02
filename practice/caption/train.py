@@ -1,5 +1,7 @@
 from keras.models import Sequential
-from keras.layers import Dense, Dropout
+from keras.layers import Dense,Conv2D,Embedding,Concatenate,LSTM,TimeDistributed,concatenate
+from keras.optimizers import SGD
+from keras.preprocessing.sequence import pad_sequences
 import keras
 import pickle
 import numpy
@@ -26,49 +28,59 @@ def data():
 	while 1:
 		for key in features_dict:
 			im_data=features_dict[key]/100
-			im_data=im_data.flatten()
+			im_data=im_data.squeeze()
 			im_desc=des_dict[key]
-			#input to neural net will consists of im_data concated with all the previous word and output will be the next word
-			X_train=list()
-			Y_train=list()
+			#input to neural net will consists of im_data and partial captions
 			im_desc=im_desc.split()
-			prev_word_appended=keras.utils.to_categorical(0, num_classes=4500)[0]
-			for i in range(len(im_desc)-1):
-				word_append=[token[im_desc[i]]]
-				word_out=[token[im_desc[i+1]]]
-				word_append=keras.utils.to_categorical(word_append, num_classes=4500)[0]
-				prev_word_appended=prev_word_appended+word_append
-				word_out=keras.utils.to_categorical(word_out, num_classes=4500)[0]
-				if len(numpy.concatenate((im_data,prev_word_appended)))==29588:
-					X_train.append(numpy.concatenate((im_data,prev_word_appended)))
-					Y_train.append(word_out)
-			X_train=numpy.array(X_train)
-			Y_train=numpy.array(Y_train)
-			if len(X_train)>0:
-				yield (X_train,Y_train)
-		
+			next_word=[]
+			incomplete_captions=[]
+			current_image=[]
+
+			for i in range(1,len(im_desc)-1):
+				if i==21: #Maximum caption length is 20
+					break
+				caps=[token[word] for word in im_desc[:i]]
+				nextw=numpy.zeros(4500)
+				nextw[token[im_desc[i]]]=1
+				incomplete_captions.append(caps)
+				next_word.append(nextw)
+				current_image.append(im_data)
+
+			next_word=numpy.asarray(next_word)
+			incomplete_captions=pad_sequences(incomplete_captions,maxlen=20,padding='post')
+			current_image=numpy.asarray(current_image)
+
+			yield [[im_data,incomplete_captions],next_word]
+
 ep=open('epochs.txt','r')
 epo=int(ep.read())
 epoc=10
 ep.close()
 
-model=Sequential()
-model.add(Dense(512,input_dim=29588,activation='relu'))
-model.add(Dense(256, activation='relu'))
-model.add(Dense(4500,activation='softmax'))
+optimize=SGD(lr=0.01)
 
-sgd = keras.optimizers.SGD(lr=0.01, momentum=0.0, decay=0.0, nesterov=False)
-model.compile(optimizer=sgd,loss='categorical_crossentropy',metrics=['accuracy'])
+image_processor_model=Sequential()
+image_processor_model.add(Conv2D(64,2,input_shape=(7,7,512)))
+image_processor_model.add(Dense(512, activation='elu'))
+#image_processor_model.compile(optimizer=optimize,loss='categorical_crossentropy',metrics=['accuracy'])
 
-model.load_weights('my_model_weights.h5')
+caption_processor=Sequential()
+caption_processor.add(Embedding(4500,128,input_length=20))
+caption_processor.add(LSTM(256,return_sequences=True))
+caption_processor.add(TimeDistributed(Dense(512,activation='relu')))
+#caption_processor.compile(optimizer=optimize,loss='categorical_crossentropy',metrics=['accuracy'])
+
+caption_generator=Sequential()
+caption_generator.add(Concatenate([image_processor_model,caption_processor]))
+caption_generator.add(LSTM(256))
+caption_generator.add(Dense(4500,activation='softmax'))
+caption_generator.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+
+#caption_generator.load_weights('my_model_weights.h5')
 train_generator=data()
-model.fit_generator(generator=train_generator,steps_per_epoch=len(features_dict),epochs=epoc)
-model.save_weights('my_model_weights.h5')
+caption_generator.fit_generator(generator=train_generator,steps_per_epoch=len(features_dict),epochs=epoc)
+caption_generator.save_weights('my_model_weights.h5')
 
 ep=open('epochs.txt','w')
 ep.write(str(epo+epoc))
 ep.close()
-			
-			
-		
-		

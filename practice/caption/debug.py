@@ -22,7 +22,7 @@ print(type(des_dict))
 print(type(token))
 
 for key in features_dict:
-	print(features_dict[key].shape)
+	print(features_dict[key].squeeze().shape)
 	break
 	
 for key in des_dict:
